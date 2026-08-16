@@ -1,19 +1,33 @@
 # Бэкап сервера VPS (Германия)
 
-Этот репозиторий содержит инструменты для автоматизации работы сервера.
+Скрипт для автоматического ежедневного резервного копирования критически важных данных сервера в Google Drive с ротацией архивов.
 
-## Состав:
-* `backup.sh` — Скрипт ежедневного бэкапа.
-  * **Что берет:** /var/www, /etc/nginx, /etc/wireguard, /usr/local/x-ui, /opt/AdGuardHome.
-  * **Куда шлет:** Google Drive (папка `VPS_Backups`).
-  * **Ротация:** хранит только 7 последних архивов.
-  * **Логи:** пишутся в `/var/log/backup.log`.
-
-## Как использовать:
-1. Положить скрипт в `/root/scripts/`.
-2. Дать права: `chmod +x /root/scripts/backup.sh`.
-3. Добавить в крон (раз в день в 3 часа ночи):
-   `0 3 * * * /root/scripts/backup.sh`
+> **Скрипт создан для Леонидыча. Не проебать!**
 
 ---
-*Скрипт создан для Леонидыча. Не проебать!*
+
+## Что входит в бэкап
+
+Скрипт собирает в архив следующие директории:
+* `/var/www` — файлы сайтов и веб-проектов
+* `/etc/nginx` — конфиги веб-сервера Nginx
+* `/etc/wireguard` — конфигурации туннелей WireGuard
+* `/usr/local/x-ui` — база данных и настройки панели X-UI
+* `/opt/AdGuardHome` — настройки и данные AdGuard Home
+
+---
+
+## Особенности работы
+
+* **Куда сохраняет:** Google Drive (папка `VPS_Backups`).
+* **Ротация:** автоматически удаляет старые копии, сохраняя только **7 последних архивов**.
+* **Логирование:** подробный лог выполнения пишется в `/var/log/backup.log`.
+
+---
+
+## Быстрая установка
+
+Выполни команду на сервере от имени `root`:
+
+```bash
+mkdir -p /root/scripts && curl -sSL [https://raw.githubusercontent.com/ln71v/backup_vps_Germaniya/main/backup.sh](https://raw.githubusercontent.com/ln71v/backup_vps_Germaniya/main/backup.sh) -o /root/scripts/backup.sh && chmod +x /root/scripts/backup.sh
