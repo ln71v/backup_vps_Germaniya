@@ -40,11 +40,12 @@ echo "[$(date)] --- Начало бэкапа ---" >> "$LOG_FILE"
 
 # Копируем данные. Ошибки не глушим в /dev/null — пишем в лог, но не роняем скрипт,
 # т.к. часть директорий может законно отсутствовать.
-for dir in /var/www /etc/nginx /etc/wireguard /usr/local/x-ui /opt/AdGuardHome; do
+for dir in /var/www /etc/nginx /etc/wireguard /usr/local/x-ui /opt/AdGuardHome /opt/kombain/aiproxy; do
     if [[ -d "$dir" ]]; then
         mkdir -p "$TMP_DIR$(dirname "$dir")"
-        if ! cp -r "$dir" "$TMP_DIR$dir" 2>>"$LOG_FILE"; then
+        if ! cp -a "$dir" "$TMP_DIR$dir" 2>>"$LOG_FILE"; then
             echo "[$(date)] ⚠️ Ошибка копирования $dir" >> "$LOG_FILE"
+            exit 1
         fi
     else
         echo "[$(date)] ⚠️ Директория $dir не найдена, пропуск" >> "$LOG_FILE"
@@ -52,7 +53,7 @@ for dir in /var/www /etc/nginx /etc/wireguard /usr/local/x-ui /opt/AdGuardHome; 
 done
 
 # Упаковка
-tar -czf "/tmp/$ARCHIVE_NAME" -C "$TMP_DIR" . >> "$LOG_FILE" 2>&1 || [ $? -eq 1 ]
+tar -czf "/tmp/$ARCHIVE_NAME" -C "$TMP_DIR" . >> "$LOG_FILE" 2>&1
 
 # Шифрование архива перед отправкой в облако (AES256, пароль из файла)
 gpg --batch --yes --pinentry-mode loopback \
